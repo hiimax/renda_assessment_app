@@ -17,28 +17,31 @@ class DeliveriesViewModel extends _$DeliveriesViewModel {
   static const String baseUrl = 'https://run.mocky.io/v3';
   final url = '$baseUrl/f7f73f19-054d-41f7-94bb-c2d3d33524bd';
 
-  List<DeliveryResponseModel>? deliveryList ;
+  DeliveryListData? deliveryList  ;
 
-  Future<List<DeliveryResponseModel>?> fetchDeliveries() async {
+  Future<DeliveryListData?> fetchDeliveries() async {
     debugPrint(url);
 
     // Show loading state
     state = const AsyncLoading();
 
     // Fetch and parse deliveries
-    state = await AsyncValue.guard(() async {
-      final response = await http.get(Uri.parse(url));
-      if (response.statusCode == 200) {
-        debugPrint('SUCCESSFUL API CALL: ${response.body.toString()}');
-        final jsonData = await json.decode(response.body.toString());
-        debugPrint('SUCCESSFUL API CALL: $jsonData');
-          final deliveryList = (jsonData).map((delivery) => DeliveryResponseModel.fromJson(delivery));
-          debugPrint(deliveryList.toString());
-          return deliveryList;
-      } else {
-        throw Exception('Faileds to load deliveries: ${response.statusCode}');
-      }
-    });
+   try{
+     final response = await http.get(Uri.parse(url));
+     if (response.statusCode == 200) {
+       final jsonData = await json.decode(jsonEncode(response.body.toString())).cast<String>().toList();
+       final deliveryList =  DeliveryListData.fromJson(jsonData);
+       debugPrint(deliveryList.deliveries![0].batchId.toString());
+       return deliveryList;
+     } else {
+       throw Exception('Faileds to load deliveries: ${response.statusCode}');
+     }
+   }catch(e,s){
+     debugPrint(s.toString());
+     debugPrint(e.toString());
+   }
+
+
 
     return null;
   }

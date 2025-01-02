@@ -3,10 +3,10 @@ class DeliveryListData {
 
   DeliveryListData({this.deliveries});
 
-  DeliveryListData.fromJson(Map<String, dynamic> json) {
-    if (json['deliveries'] != null) {
+  DeliveryListData.fromJson(List json) {
+    if (json.isNotEmpty) {
       deliveries = <DeliveryResponseModel>[];
-      json['deliveries'].forEach((v) {
+      json.forEach((v) {
         deliveries!.add(DeliveryResponseModel.fromJson(v));
       });
     }
